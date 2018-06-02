@@ -17,10 +17,25 @@ describe('bash class', () => {
         });
 
         it('should add extensions to commands', () => {
-            const noop = () => {};
+            const noop = {
+                exec: () => {
+                    return null;
+                },
+            };
             const bash = new Bash({ test: noop });
-            chai.assert.isFunction(bash.commands.test);
+            chai.assert.isFunction(bash.commands.test.exec);
             chai.assert.strictEqual(bash.commands.test, noop);
+        });
+
+        it('should override default commands', () => {
+            const clear = {
+                exec: (state) => {
+                    return Object.assign({}, state, { history: ['new clear'] });
+                },
+            };
+            const bash = new Bash({ clear });
+            chai.assert.isFunction(bash.commands.clear.exec);
+            chai.assert.strictEqual(bash.commands.clear, clear);
         });
 
     });
